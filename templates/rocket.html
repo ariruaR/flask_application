@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title%} RocketPage {% endblock title%}
+{% block body %}
+
+<h1>Rocket Crash</h1>
+<h2 class="crash_coefficient">{{ text }}</h2>
+<h3 class="winner_bid">{{ text2 }}</h3>
+<form action="" class="form-casino">
+  <input type="text" name="bid" placeholder="Ваша Ставка" class="input-bid">
+  <button onclick=window.location.reload() class="play-btn">ИГРАТЬ</button>
+</form>
+<button class="refreshing_dont_change_bid" onclick=window.location.reload()>Играть не меняя ставку</button>
+
+
+{% endblock body%}
