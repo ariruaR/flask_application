@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+
+{% block title %} {{username}} Profile {% endblock title %}
+
+{% block body %}
+
+<div>
+  <div>
+    <h1 class="username"> {{ username }}</h1>
+    <h2 class="balance"> {{ user[0][2] }}</h2>
+    <a href="/pay/deposite?username={{username}}" class="deposite">Пополнить баланс</a>
+    <a href="/?username={{ username }}">На главную</a>
+  </div>
+</div>
+
+
+{% endblock body %}

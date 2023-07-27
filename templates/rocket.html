@@ -2,6 +2,15 @@
 {% block title%} RocketPage {% endblock title%}
 {% block body %}
 
+<nav>
+  <div>
+    <div class="user-profile">
+      <img src="" alt="" class="user_avatar">
+      <a href="/user/{{username}}" class="user">{{ username }}</a>
+      <label for="">{{text3}}</label>
+    </div>
+  </div>
+</nav>
 <h1>Rocket Crash</h1>
 <h2 class="crash_coefficient">{{ text }}</h2>
 <h3 class="winner_bid">{{ text2 }}</h3>

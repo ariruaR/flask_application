@@ -30,6 +30,15 @@ body{
   color: aqua;
   border-radius: 10px;
 }
+.user{
+  text-decoration: none;
+  color: white;
+  font-size: 22px;
+}
+.user_avatar{
+  border-radius: 50px;
+  border: white, 2px;
+}
 /* signup.html */
 
 .login{

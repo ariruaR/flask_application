@@ -5,13 +5,20 @@
 {% block body %} 
 
 <div>
+  <h1>{{text}}</h1>
   <div>
-    <form action="">
-      {{ form.hidden_tag() }}
-      {{ form.username }}
-      {{ form.password }}
-      {{ form.submit }}
+    <form action="" method="post">
+      <label for="">Username</label>
+      <input type="text" name="username">
+      <p> </p>
+      <label for="">Password</label>
+      <input type="password" name="password">
+      <p> </p>
+      <button>Sign Up</button>
     </form>
+    <button>
+      <a href="/user/{{ user}}">Get Profile</a>
+    </button>
   </div>
 </div>
 

@@ -6,7 +6,14 @@
 <div>
   <div>
     <section>
-      <a href="/play/rocket">Rocket</a>
+      <a href="/signup">Sign Up</a>
+      <a href="/login">Login</a>
+      {% if username == None %}
+      <label for="">Зарегистрируйтесь</label>
+      {% else %}
+      <a href="/user/{{username}}">{{username}}</a>
+      <a href="/play/rocket?username={{username}}">Rocket</a>
+      {% endif %}
     </section>
   </div>
 </div>
