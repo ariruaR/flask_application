@@ -51,9 +51,11 @@ def get_deposite(username, deposite):
 
 @app.route('/')
 def main():
-  if current_user.is_authenticated == False:
-    flash('Sign Up Please')
-  return render_template('main.html')
+  if current_user.is_authenticated:
+    balance = "{:.2f}".format(current_user.balance)
+    return render_template('main.html', balance=balance)
+  return redirect(url_for('login'))
+  
 
 
 @app.route('/play/rocket')
@@ -62,7 +64,7 @@ def play_rocket():
   username = current_user.username
   bid = request.args.get('bid')
   try:
-    if bid != None:
+    if bid != None and int(bid) >= 1:
       if current_user.balance >= int(bid):
         rocket = Rocket(bid)
         result_coef = rocket.play()
@@ -73,7 +75,7 @@ def play_rocket():
         username=username,
         text=result_coef,
           text2=rocket.get_bid(),
-          text3=int(current_user.balance),
+          text3="{:.2f}".format(current_user.balance),
           text4=bid
           )       
       if current_user.balance < int(bid):
@@ -81,9 +83,9 @@ def play_rocket():
         return redirect(url_for('.deposite'))
       return render_template('rocket.html',
       username=username,
-      text3=int(current_user.balance),
+      text3="{:.2f}".format(current_user.balance),
       text4=bid)
-    return render_template('rocket.html', username=username, text3=int(current_user.balance))
+    return render_template('rocket.html', username=username, text3="{:.2f}".format(current_user.balance))
   except ValueError:
     flash('Invalid bid')
     return redirect('rocket')
@@ -119,7 +121,8 @@ def login():
 
 @app.route('/userprofile')
 def userprofile():
-  return render_template('userprofile.html', username=current_user.username)
+  balance = "{:.2f}".format(current_user.balance)
+  return render_template('userprofile.html', username=current_user.username, balance=balance)
 
 
 @app.route('/pay/deposite', methods=['GET', 'POST'])
@@ -132,6 +135,7 @@ def deposite():
       get_deposite(username, deposite)
       return redirect(url_for('userprofile', username=username))
   return render_template('paypage.html')
+
 @app.route('/userprofile/logout')
 @login_required
 def logout():

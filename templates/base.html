@@ -4,10 +4,28 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css')}}">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
   <title>{% block title%} {% endblock title%}</title>
 </head>
 <body>
   {% block body%} {% endblock body%}
-  <a href="/">На Главную</a>
+  <div>
+    <div>
+      <span class="material-symbols-sharp">
+        home
+      </span>
+      <a href="/" class="navigation">Главная</a>
+    </div>
+    <div>
+      <span class="material-symbols-sharp">
+        logout
+        </span>
+      <a href="/userprofile/logout" class="navigation">Выйти</a>
+    </div>
+  </div>
+    
+
 </body>
 </html>

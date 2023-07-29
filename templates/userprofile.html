@@ -9,11 +9,9 @@
     {% endfor %}
 <div>
   <div>
-    <h1 class="username"> {{ username }}</h1>
-    <h2 class="balance"> {{ current_user.balance }}</h2>
-    <a href="/pay/deposite?username={{username}}" class="deposite">Пополнить баланс</a>  </div>
-  <div>
-    <a href="/userprofile/logout">Выйти</a>
+    <h1 class="username navigation"> {{ username }}</h1>
+    <h2 class="balance navigation"> {{ balance }}</h2>
+    <a href="/pay/deposite?username={{username}}" class="deposite navigation">Пополнить баланс</a>  
   </div>
 </div>
 

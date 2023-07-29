@@ -2,13 +2,27 @@
 
 {% block title %} Main Page {% endblock title %}
 {% block body %}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
 
 <div>
-  <div>
-      <a href="/signup" class="navigation sigh-up">Sign Up</a>
-      <a href="/login" class="navigation login">Login</a>
+  <div class="user">
+    <h3>
       <a href="/userprofile" class="navigation username">{{current_user.username}}</a>
+    </h3>
+    <span class="navigation">Баланс:{{balance}}</span>
+  </div>
+  <div>
+    <span class="material-symbols-sharp">person_add</span>
+    <a href="/signup" class="navigation sigh-up">Sign Up</a>
+  </div>
+    <div>
+      <span class="material-symbols-sharp">login</span>
+      <a href="/login" class="navigation login">Login</a>
+    </div>
+    <div>
       <a href="/play/rocket?username={{current_user.username}}" class="navigation rocket-gamemode">Rocket</a>
+    </div>
   </div>
 </div>
 
