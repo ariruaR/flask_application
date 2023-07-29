@@ -4,13 +4,16 @@
 {% block title %} {{username}} Profile {% endblock title %}
 
 {% block body %}
-
+{% for category, message in  get_flashed_messages(with_categories=true) %}
+	<spam class="{{ category }}"></spam>
+    {% endfor %}
 <div>
   <div>
     <h1 class="username"> {{ username }}</h1>
-    <h2 class="balance"> {{ user[0][2] }}</h2>
-    <a href="/pay/deposite?username={{username}}" class="deposite">Пополнить баланс</a>
-    <a href="/?username={{ username }}">На главную</a>
+    <h2 class="balance"> {{ current_user.balance }}</h2>
+    <a href="/pay/deposite?username={{username}}" class="deposite">Пополнить баланс</a>  </div>
+  <div>
+    <a href="/userprofile/logout">Выйти</a>
   </div>
 </div>
 

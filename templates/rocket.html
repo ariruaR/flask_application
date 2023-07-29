@@ -1,23 +1,30 @@
 {% extends 'base.html' %}
 {% block title%} RocketPage {% endblock title%}
 {% block body %}
-
+{% for category, message in  get_flashed_messages(with_categories=true) %}
+	<spam class="{{ category }}">{{ message }}spam>
+    {% endfor %}
 <nav>
   <div>
     <div class="user-profile">
       <img src="" alt="" class="user_avatar">
-      <a href="/user/{{username}}" class="user">{{ username }}</a>
-      <label for="">{{text3}}</label>
+      <a href="/userprofile" class="user">{{ username }}</a>
+      <label for="">Ваш баланс: {{text3}}</label>
     </div>
   </div>
 </nav>
 <h1>Rocket Crash</h1>
 <h2 class="crash_coefficient">{{ text }}</h2>
-<h3 class="winner_bid">{{ text2 }}</h3>
+<h3 class="winner_bid">Ваш выигрыш: {{ text2 }}</h3>
 <form action="" class="form-casino">
   <input type="text" name="bid" placeholder="Ваша Ставка" class="input-bid">
   <button onclick=window.location.reload() class="play-btn">ИГРАТЬ</button>
 </form>
+{% if text4 != None %}
+<li>Текущая ставка: {{text4}}</li>
+{% else %}
+<li>Вы ничего не поставили</li>
+{% endif %}
 <button class="refreshing_dont_change_bid" onclick=window.location.reload()>Играть не меняя ставку</button>
 
 

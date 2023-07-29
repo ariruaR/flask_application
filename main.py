@@ -1,54 +1,92 @@
-from flask import Flask, render_template, request, url_for, redirect
+from flask import Flask, render_template, request, url_for, redirect, flash, session
+from flask_login import LoginManager, UserMixin, login_user, current_user, login_required, logout_user
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import update
 from flask_restful import Resource,Api
 from rocket import Rocket
 from forms import RegisterForm, LoginForm
-import sqlite3
+from werkzeug.security import check_password_hash, generate_password_hash
+
 app = Flask(__name__)
 api = Api()
 app.config['SECRET_KEY'] = 'Hvfjhbkjrh3742675yhhgwhb'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+db = SQLAlchemy(app)
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
 
-db = sqlite3.connect('database.db', check_same_thread=False)
-cursor = db.cursor()
-db.execute("""CREATE TABLE IF NOT EXISTS users(
-      username TEXT,
-      password TEXT,
-      balance BIGINT
-    )""")
-db.commit()
 
-class User:
-  def __init__(self,username,password):
-    self.username = username
-    self.password = password
-    db.execute(f"INSERT INTO users (username, password, balance) VALUES (?,?,?);", (f"{self.username}", f"{self.password}", 0))
-    db.commit()
 
+@login_manager.user_loader
+def load_user(id):
+  return db.session.query(Users).get(id)
+
+
+
+class Users(db.Model, UserMixin):
+  id = db.Column(db.Integer, primary_key=True)
+  username = db.Column(db.String(50), unique=True)
+  password = db.Column(db.String(500), nullable=True)
+  balance = db.Column(db.Integer, default=0)
+  
+  def __repr__(self):
+    return f"<username {self.username}>"
+  
+  def check_password(self, password_hash, password):
+    return check_password_hash(password_hash, password)
 
 def get_deposite(username, deposite):
-  db.execute("UPDATE users SET balance = balance + ? WHERE username = ?", (deposite, username))
-  db.commit()
+  user = db.session.query(Users).filter(Users.username==username).first()
+  user.balance += int(deposite)
+  db.session.flush()
+  db.session.commit()
+
+
+
+
+
+
+
 
 
 @app.route('/')
 def main():
-  username = request.args.get('username')
-  user_info = db.execute(f'SELECT * FROM users WHERE username = "{username}"').fetchall()
-  return render_template('main.html', username=username)
+  if current_user.is_authenticated == False:
+    flash('Sign Up Please')
+  return render_template('main.html')
 
 
 @app.route('/play/rocket')
+@login_required
 def play_rocket():
-  query = request.args.get('bid')
-  username = request.args.get('username')
-  if username == None or username == '':
-    return render_template('error_page.html', error='Неизвестный пользователь')
-  if query and query != '':
-    balance = db.execute(f'SELECT balance FROM users WHERE username = "{username}"').fetchall()
-    db.execute(f"UPDATE users SET balance = balance - ? WHERE username = '{username}'", (int(query)))
-    rocket = Rocket(query)
-    return render_template('rocket.html', text=f'{rocket.play()}', text2=f'Ваш выигрыш: {rocket.get_bid()}', username=username, text3=balance[0])
-  else:
-    return render_template('rocket.html', text='Вы не указали ставку') 
+  username = current_user.username
+  bid = request.args.get('bid')
+  try:
+    if bid != None:
+      if current_user.balance >= int(bid):
+        rocket = Rocket(bid)
+        result_coef = rocket.play()
+        current_user.balance += rocket.get_bid() - float(bid) 
+        db.session.flush()
+        db.session.commit()
+        return render_template('rocket.html',
+        username=username,
+        text=result_coef,
+          text2=rocket.get_bid(),
+          text3=int(current_user.balance),
+          text4=bid
+          )       
+      if current_user.balance < int(bid):
+        flash('Недостаточно средств')
+        return redirect(url_for('.deposite'))
+      return render_template('rocket.html',
+      username=username,
+      text3=int(current_user.balance),
+      text4=bid)
+    return render_template('rocket.html', username=username, text3=int(current_user.balance))
+  except ValueError:
+    flash('Invalid bid')
+    return redirect('rocket')
 
 @app.route('/signup',methods=['GET', 'POST'])
 def sign_up():
@@ -56,12 +94,11 @@ def sign_up():
   if request.method == 'POST':
     username = request.form.get('username')
     password = request.form.get('password')
-    resp = db.execute(f"SELECT * FROM users WHERE username = '{username}'").fetchall()
-  # проверка и создание юзера
-    if len(resp) == 0: 
-      user = User(username, password)
-      return redirect(url_for('login'))
-    return render_template('error_page.html', error='Пользователь с этим именем уже существует')
+    u = Users(username=username, password=generate_password_hash(password))
+    db.session.add(u)
+    db.session.flush()
+    db.session.commit()
+    return redirect(url_for('login'))
   return render_template('signup.html')
 
 
@@ -70,29 +107,39 @@ def login():
   if request.method == 'POST':
     username = request.form.get('username')
     password = request.form.get('password')
-    resp = db.execute(f"SELECT password FROM users WHERE username = '{username}'").fetchall()
-    if password != resp[0][0]:
-      return render_template('error_page.html', text='Password Error', error='Неверные логин или пароль')
-    return redirect(url_for('.userprofile', username=username))
+    password_hash = db.session.query(Users).filter(Users.username == username).first()
+    user = db.session.query(Users).filter(Users.username == username).first()
+    if user and user.check_password(password_hash.password, password):
+      remember = request.form.get('remember-me-checkbox')
+      login_user(user, remember=remember)
+      return redirect(url_for('.userprofile'))
+    flash("Invalid username/password", 'error')
   return render_template('login.html') 
 
 
-@app.route('/user/<string:username>')
-def userprofile(username):
-  user = cursor.execute(f"SELECT * FROM users WHERE username = '{username}'").fetchall()
-  return render_template('userprofile.html', username=user[0][0], user=user)
+@app.route('/userprofile')
+def userprofile():
+  return render_template('userprofile.html', username=current_user.username)
 
 
 @app.route('/pay/deposite', methods=['GET', 'POST'])
 def deposite():
   if request.method == 'POST':
-    username = request.args.get('username')
+    username = current_user.username
     deposite = request.form.get('deposite')
-    resp = db.execute(f"SELECT * FROM users WHERE username = '{username}'").fetchall()
+    resp = Users.query.filter_by(username=username).all()
     if len(resp) != 0:
       get_deposite(username, deposite)
       return redirect(url_for('userprofile', username=username))
   return render_template('paypage.html')
+@app.route('/userprofile/logout')
+@login_required
+def logout():
+  logout_user()
+  flash('Вы успешно вышли с аккаунта')
+  return redirect(url_for('login'))
+
+
 
 # API REALISATION
 class Main(Resource):
@@ -100,6 +147,8 @@ class Main(Resource):
 
 # api.add_resource(Main, 'v1/apiMain')
 # api.init_app(app)
+with app.app_context():
+  db.create_all()
 
 if __name__ == "__main__":
-  app.run(debug=True)
+  app.run(host='127.0.0.1',port=2000,debug=True)

@@ -5,16 +5,10 @@
 
 <div>
   <div>
-    <section>
-      <a href="/signup">Sign Up</a>
-      <a href="/login">Login</a>
-      {% if username == None %}
-      <label for="">Зарегистрируйтесь</label>
-      {% else %}
-      <a href="/user/{{username}}">{{username}}</a>
-      <a href="/play/rocket?username={{username}}">Rocket</a>
-      {% endif %}
-    </section>
+      <a href="/signup" class="navigation sigh-up">Sign Up</a>
+      <a href="/login" class="navigation login">Login</a>
+      <a href="/userprofile" class="navigation username">{{current_user.username}}</a>
+      <a href="/play/rocket?username={{current_user.username}}" class="navigation rocket-gamemode">Rocket</a>
   </div>
 </div>
 

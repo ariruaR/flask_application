@@ -63,3 +63,16 @@ body{
   background-color: azure;
   color:black
 }
+/* main page */
+
+.navigation{
+  text-decoration: none;
+  position: relative;
+  align-content: center;
+  justify-content: center;
+  font-size: 25px;
+  color: blueviolet;
+}
+.register{
+  color: beige;
+}
