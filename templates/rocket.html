@@ -1,20 +1,18 @@
 {% extends 'base.html' %}
 {% block title%} RocketPage {% endblock title%}
 {% block body %}
-{% for category, message in  get_flashed_messages(with_categories=true) %}
-	<spam class="{{ category }}">{{ message }}spam>
-    {% endfor %}
-<nav>
+<nav id="rocket-nav">
   <div>
     <div class="user-profile">
       <img src="" alt="" class="user_avatar">
       <a href="/userprofile" class="user">{{ username }}</a>
+      <p> </p>
       <label for="">Ваш баланс: {{text3}}</label>
     </div>
   </div>
 </nav>
 <h1>Rocket Crash</h1>
-<h2 class="crash_coefficient">{{ text }}</h2>
+<h2 class="crash_coefficient"> {{ text }}</h2>
 <h3 class="winner_bid">Ваш выигрыш: {{ text2 }}</h3>
 <form action="" class="form-casino">
   <input type="text" name="bid" placeholder="Ваша Ставка" class="input-bid">

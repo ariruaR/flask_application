@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %} Black Jack {% endblock title %}
+
+{% block body %}
+
+<div class="user-info">
+  <span><b>{{username}}</b></span>
+  <span>Баланс: {{balance}}</span>
+</div>
+<div class="blackjack">
+  <div class="user-cards">
+    <span> {{ dillercard }}</span>
+    <span>{{ usercard }}</span>
+    <button class="get-new-card">Взять еще</button>
+  </div>
+</div>
+
+
+
+{% endblock body%}

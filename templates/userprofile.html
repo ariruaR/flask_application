@@ -4,16 +4,21 @@
 {% block title %} {{username}} Profile {% endblock title %}
 
 {% block body %}
-{% for category, message in  get_flashed_messages(with_categories=true) %}
-	<spam class="{{ category }}"></spam>
-    {% endfor %}
+
 <div>
-  <div>
-    <h1 class="username navigation"> {{ username }}</h1>
-    <h2 class="balance navigation"> {{ balance }}</h2>
-    <a href="/pay/deposite?username={{username}}" class="deposite navigation">Пополнить баланс</a>  
+  <div class="container">
+    <img src="" alt="" class="user-avatar">
+    <h1 class="username">{{username}}</h1>
+    <span class="balance">
+      {{balance}} $
+  </span>
+    <!-- РЕАЛИЗОВАТЬ ВЫБОР ВАЛЮТЫ И КОНВЕРТАЦИИ ЕЕ В ДОЛЛАРЫ-->
+    <button class="logout-btn">
+      <a class="logout-span" href="userprofile/logout">logout</a>
+    </button>
   </div>
 </div>
+
 
 
 {% endblock body %}

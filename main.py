@@ -6,6 +6,8 @@ from flask_restful import Resource,Api
 from rocket import Rocket
 from forms import RegisterForm, LoginForm
 from werkzeug.security import check_password_hash, generate_password_hash
+from blackjack import Blackjack
+
 
 app = Flask(__name__)
 api = Api()
@@ -42,13 +44,6 @@ def get_deposite(username, deposite):
   db.session.commit()
 
 
-
-
-
-
-
-
-
 @app.route('/')
 def main():
   if current_user.is_authenticated:
@@ -79,8 +74,7 @@ def play_rocket():
           text4=bid
           )       
       if current_user.balance < int(bid):
-        flash('Недостаточно средств')
-        return redirect(url_for('.deposite'))
+        return redirect(url_for('.deposite'), text='Недостаточно средств')
       return render_template('rocket.html',
       username=username,
       text3="{:.2f}".format(current_user.balance),
@@ -89,6 +83,22 @@ def play_rocket():
   except ValueError:
     flash('Invalid bid')
     return redirect('rocket')
+
+
+@app.route('/play/blackjack')
+@login_required
+def blackjack():
+  balance = "{:.2f}".format(current_user.balance)
+  blackjack = Blackjack()
+  user_sum,user_card,diller_card = blackjack.play()
+  return render_template('blackjack.html', 
+  username=current_user.username, 
+  balance=balance,
+  usercard = user_card,
+  dillercard = diller_card,
+  usercardsum = blackjack.sum_card(user_card),
+  dillercardsum = blackjack.sum_card(diller_card)
+  )
 
 @app.route('/signup',methods=['GET', 'POST'])
 def sign_up():
@@ -121,7 +131,7 @@ def login():
 
 @app.route('/userprofile')
 def userprofile():
-  balance = "{:.2f}".format(current_user.balance)
+  balance = "{:.0f}".format(current_user.balance)
   return render_template('userprofile.html', username=current_user.username, balance=balance)
 
 
